@@ -1,5 +1,5 @@
-import { LettaClient } from "@letta-ai/letta-client";
 import { TOKEN } from "./config.js";
+import { LettaClient } from "@letta-ai/letta-client";
 
 export const client = new LettaClient({ token: TOKEN });
 
