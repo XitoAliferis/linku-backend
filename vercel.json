@@ -5,10 +5,5 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1.js" }
-  ],
-  "functions": {
-    "api/match.js": {
-      "schedule": "*/5 * * * *"
-    }
-  }
+  ]
 }

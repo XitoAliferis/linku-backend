@@ -1,6 +1,15 @@
 import { VoyageAIClient } from 'voyageai';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import {
+  getProfilesForConnect,
+  getConnections as getRecommendedMatches,
+  insertConnectionRecord,
+  updateLastConnectedAt
+} from '../Database/database.js';
+import { setPersona } from '../Agents/agents.js';
+import { clearConversation, runConversation, summarizeConversationHistory } from '../Agents/conversation.js';
+import { CONVO_LENGTH, INIT_PROMPT } from '../Agents/config.js';
 
 dotenv.config();
 
@@ -194,28 +203,68 @@ async function matchPipeline() {
 
 //execution
 export default async function handler(req, res) {
-    try {
-        await matchPipeline();
-        const profiles = await fetchUserObject()
-        for (const profile of profiles) {
-            try {
-                const response = await fetch(`${process.env.BASE_URL}/api/agents_connect`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(profile)
-                });
-                const result = await response.json();
-                console.log(`agents_connect ran for ${profile.id}:`, result.message || result);
-            } catch (err) {
-                console.error(`Failed to run agents_connect for ${profile.id}:`, err);
-            }
-        }
-        res.status(200).json({ message: "Match pipeline executed successfully" });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Server error" });
+  try {
+    console.log('hi')
+    // Always run full match pipeline
+    await matchPipeline();
+
+    const now = new Date().toISOString();
+
+    // Check for manual override
+    const manualProfile = req.body && req.body.id && req.body.agent_id
+      ? req.body
+      : null;
+
+    const profilesToProcess = [];
+
+    if (manualProfile) {
+      profilesToProcess.push(manualProfile);
+      console.log(`🔧 Manual run for profile ${manualProfile.id}`);
+    } else {
+      // Scheduled batch mode
+      const profiles = await getProfilesForConnect();
+      const shuffled = profiles.sort(() => Math.random() - 0.5);
+      const eligible = shuffled.filter(p => {
+        const freq = p.connect_frequency_per_day;
+        const hoursBetween = 24 / freq;
+        if (!p.last_connected_at) return true;
+        const hoursSince = (new Date() - new Date(p.last_connected_at)) / 1000 / 3600;
+        return hoursSince >= hoursBetween;
+      });
+
+      const BATCH_SIZE = 1;
+      profilesToProcess.push(...eligible.slice(0, BATCH_SIZE));
     }
+
+    for (const profile of profilesToProcess) {
+      setPersona(profile.agent_id, profile.core_memories);
+      const matches = await getRecommendedMatches(profile.id);
+
+      for (const conn of matches) {
+        try {
+          await runConversation(profile.agent_id, profile.id, conn.agent_id, conn.id, CONVO_LENGTH, INIT_PROMPT);
+          await summarizeConversationHistory(profile.agent_id, conn.agent_id);
+          await summarizeConversationHistory(conn.agent_id, profile.agent_id);
+          clearConversation(profile.agent_id, conn.agent_id);
+          await insertConnectionRecord(profile.id, conn.id);
+        } catch (e) {
+          console.error(`❌ Error connecting ${profile.id}↔${conn.id}:`, e.message);
+        }
+      }
+
+      await updateLastConnectedAt(profile.id, now);
+      console.log(`✅ Connected user ${profile.id}`);
+    }
+
+    res.status(200).json({
+      message: `Matched and connected ${profilesToProcess.length} user(s).`
+    });
+  } catch (err) {
+    console.error('❌ match+connect error:', err);
+    res.status(500).json({ error: 'Server error', detail: err.message });
+  }
 }
+
 
 
 //matchPipeline();
