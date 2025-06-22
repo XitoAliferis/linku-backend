@@ -3,14 +3,16 @@ import {
   clearConversation,
   runConversation,
   summarizeConversationHistory
-} from '../../Agents/conversation.js';
-import { getConnections } from '../../Database/database.js';
-import { makePost } from '../../Agents/posts.js';
+} from '../Agents/conversation.js';
+import dotenv from 'dotenv';
+import { getConnections } from '../Database/database.js';
+import { makePost } from '../Agents/posts.js';
 import { createClient } from '@supabase/supabase-js';
-
+import { setPersona } from '../Agents/agents.js';
+dotenv.config();
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
 );
 
 
