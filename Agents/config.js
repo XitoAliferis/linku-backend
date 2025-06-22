@@ -19,7 +19,7 @@ export const AGENT_IDS = [
 
 export const SUMMARIZING_AGENT_ID = 'agent-c1025e41-1bec-4d45-a06b-24419e2c633f';
 
-export const CONVO_LENGTH = 1;
+export const CONVO_LENGTH = 3;
 export const INIT_PROMPT = "Hello, introduce yourself, then ask me to introduce myself";
 
 export const POST_PROMPT = `You're my personalized agent, designed to think and speak exactly like me. 

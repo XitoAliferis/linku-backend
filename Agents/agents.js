@@ -6,7 +6,9 @@ export const client = new LettaClient({ token: TOKEN });
 export async function setPersona(agentId, persona) {
   return client.agents.blocks.modify(agentId, "persona", { value: persona });
 }
-
+export async function getPersona(agentId) {
+  return client.agents.blocks.retrieve(agentId, 'persona');
+}
 export async function resetBlocks(agentId) {
   await client.agents.blocks.modify(agentId, "human", { value: '' });
   return client.agents.blocks.modify(agentId, "conversation_summary", { value: '' });

@@ -204,7 +204,6 @@ async function matchPipeline() {
 //execution
 export default async function handler(req, res) {
   try {
-    console.log('hi')
     // Always run full match pipeline
     await matchPipeline();
 

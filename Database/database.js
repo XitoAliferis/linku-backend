@@ -115,26 +115,34 @@ export async function getProfilesForConnect() {
 }
 
 export async function insertConnectionRecord(user1, user2) {
+  const [userA, userB] = [user1, user2].sort();
+
   const { data: existing, error: chkErr } = await supabase
     .from('connections')
-    .select('id')
-    .or(
-      `and(user_id_1.eq.${user1},user_id_2.eq.${user2}),and(user_id_1.eq.${user2},user_id_2.eq.${user1})`
-    )
+    .select('user_id_1, user_id_2')
+    .eq('user_id_1', userA)
+    .eq('user_id_2', userB)
     .limit(1);
 
   if (chkErr) {
-    console.error('Error checking existing connection:', chkErr.message);
+    console.error('❌ Error checking existing connection:', chkErr.message);
     return;
   }
-  if (existing?.length) return;
 
+  if (existing && existing.length > 0) {
+    return;
+  }
   const { error: insErr } = await supabase
     .from('connections')
-    .insert([{ user_id_1: user1, user_id_2: user2 }]);
+    .insert([{ user_id_1: userA, user_id_2: userB }]);
 
-  if (insErr) console.error('Error inserting connection record:', insErr.message);
+  if (insErr) {
+    console.error('❌ Error inserting connection record:', insErr.message);
+  } else {
+    console.log(`✅ Connection inserted: ${userA} ↔ ${userB}`);
+  }
 }
+
 
 export async function updateLastConnectedAt(userId, timestamp) {
   const { error } = await supabase
