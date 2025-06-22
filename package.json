@@ -1,9 +1,21 @@
 {
+  "name": "match_pipeline",
+  "version": "1.0.0",
+  "main": "match.js",
+  "type": "module",
+  
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
   "dependencies": {
-    "next": "^15.3.4",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "@letta-ai/letta-client": "^0.1.132",
-    "dotenv": "^16.5.0"
+    "@supabase/supabase-js": "^2.50.0",
+    "dotenv": "^16.5.0",
+    "ml-distance": "^4.0.1",
+    "voyageai": "^0.0.4"
   }
+  
 }
