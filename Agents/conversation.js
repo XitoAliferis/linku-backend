@@ -102,14 +102,22 @@ export async function summarizeConversationHistory(agent1, agent2) {
   const conversation = getConversation(agent1, agent2);
 
   if (!conversation) {
+<<<<<<< HEAD
     return "No conversation found between the given agents.";
+=======
+    return `No conversation found between ${agent1} and ${agent2}.`;
+>>>>>>> d2174e4b0fe873e09ce6b4a9031cd3654a518530
   }
 
   const dialogue = conversation.messages
     .map(m => `${m.speaker}: ${m.message}`)
     .join("\n");
 
+<<<<<<< HEAD
   const prompt = `Summarize the following conversation between two agents:\n\n${dialogue}`;
+=======
+  const prompt = `Summarize the following conversation in the perspective of ${agent1}:\n\n${dialogue}`;
+>>>>>>> d2174e4b0fe873e09ce6b4a9031cd3654a518530
 
   const response = await client.agents.messages.create(SUMMARIZING_AGENT_ID, {
     messages: [{ role: "user", content: prompt }]
@@ -119,6 +127,12 @@ export async function summarizeConversationHistory(agent1, agent2) {
     msg => msg.messageType === "assistant_message" && msg.content
   );
 
+<<<<<<< HEAD
   return summary?.content || "No summary generated.";
 }
 
+=======
+  await client.agents.messages.reset(SUMMARIZING_AGENT_ID);
+  return summary?.content || `No summary generated for ${agent1}.`;
+}
+>>>>>>> d2174e4b0fe873e09ce6b4a9031cd3654a518530
