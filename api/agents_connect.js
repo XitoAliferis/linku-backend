@@ -1,9 +1,9 @@
-import { CONVO_LENGTH, INIT_PROMPT, POST_PROMPT } from '../../Agents/config.js';
-import { setPersona } from '../../Agents/agents.js';
+import { CONVO_LENGTH, INIT_PROMPT, POST_PROMPT } from '../Agents/config.js';
 import {
   clearConversation,
   runConversation,
   summarizeConversationHistory
+<<<<<<< HEAD
 } from '../../Agents/conversation.js';
 import { getConnections } from '../../Database/database.js';
 import { makePost } from '../../Agents/posts.js';
@@ -13,6 +13,12 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
+=======
+} from '../Agents/conversation.js';
+import { makePost } from '../Agents/posts.js';
+import { setPersona } from '../Agents/agents.js';
+import { getConnections } from '../Database/database.js';
+>>>>>>> 6c28a50abfd2b549452e4ae3dfe258e228264d85
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
