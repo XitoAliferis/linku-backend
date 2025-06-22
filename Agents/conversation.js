@@ -1,4 +1,4 @@
-import { insertSummary } from "../Database/database.js";
+import { insertMessage, insertSummary } from "../Database/database.js";
 import { client } from "./agents.js";
 import { SUMMARIZING_AGENT_ID } from "./config.js";
 
@@ -12,7 +12,7 @@ export let conversationHistory = [];
  * @param {number} turns             - Number of back-and-forth exchanges.
  * @param {string} initialPrompt     - The opening message.
  */
-export async function runConversation(agent1, agent2, turns, initialPrompt) {
+export async function runConversation(agent1, agent1_id, agent2,agent2_id, turns, initialPrompt) {
   let nextMessage = initialPrompt;
   let convo = getConversation(agent1, agent2);
   if (!convo) {
@@ -23,9 +23,10 @@ export async function runConversation(agent1, agent2, turns, initialPrompt) {
   for (let i = 0; i < turns; i++) {
     nextMessage = await sendMessage(agent1, nextMessage);
     convo.messages.push({ speaker: agent1, message: nextMessage });
-
+    await insertMessage(agent1_id, agent2_id, nextMessage, false, true);
     nextMessage = await sendMessage(agent2, nextMessage);
     convo.messages.push({ speaker: agent2, message: nextMessage });
+    await insertMessage(agent2_id, agent1_id, nextMessage, false, true);
   }
 }
 
@@ -52,7 +53,7 @@ function getConversation(agent1, agent2) {
  * @param {string} input
  * @returns {Promise<string>}        The agent's reply (or the input on fallback).
  */
-async function sendMessage(agentId, input) {
+export async function sendMessage(agentId, input) {
   const response = await client.agents.messages.create(agentId, {
     messages: [{ role: "user", content: input }]
   });
