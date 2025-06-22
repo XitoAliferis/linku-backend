@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@letta-ai/letta-client": "^0.1.132",
     "@supabase/supabase-js": "^2.50.0",
     "dotenv": "^16.5.0",
     "ml-distance": "^4.0.1",
