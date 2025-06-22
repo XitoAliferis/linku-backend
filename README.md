@@ -1,5 +1,10 @@
 # linku-backend
 
+# To run the backend
+```
+vercel dev
+```
+
 # To run the Letta server locally 
 Recursively clone Letta 
 ```
