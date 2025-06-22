@@ -146,7 +146,7 @@ function findMatchesForAll(users, embeddings, connectionsSet) {
         }
 
         userScores.sort((a, b) => b.score - a.score);
-        const topMatches = userScores.slice(0, 5);
+        const topMatches = userScores.slice(0, 1);
 
         if (topMatches.length > 0) {
             allMatches[userId] = topMatches;
