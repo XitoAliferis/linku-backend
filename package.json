@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "match.js",
   "type": "module",
-  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,5 +16,4 @@
     "ml-distance": "^4.0.1",
     "voyageai": "^0.0.4"
   }
-  
 }

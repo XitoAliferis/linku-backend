@@ -1,4 +1,4 @@
-import { ClientSideAccessTokensCreateResponsePolicyDataItemAccessItem } from "@letta-ai/letta-client/serialization/index.js";
+import { insertSummary } from "../Database/database.js";
 import { client } from "./agents.js";
 import { SUMMARIZING_AGENT_ID } from "./config.js";
 
@@ -14,8 +14,6 @@ export let conversationHistory = [];
  */
 export async function runConversation(agent1, agent2, turns, initialPrompt) {
   let nextMessage = initialPrompt;
-
-  // Initialize or retrieve the conversation record
   let convo = getConversation(agent1, agent2);
   if (!convo) {
     convo = { agents: [agent1, agent2], messages: [] };
@@ -23,12 +21,10 @@ export async function runConversation(agent1, agent2, turns, initialPrompt) {
   }
 
   for (let i = 0; i < turns; i++) {
-    // Agent 1 speaks
-    nextMessage = await sendMessage(agent1, nextMessage, "Person 1");
+    nextMessage = await sendMessage(agent1, nextMessage);
     convo.messages.push({ speaker: agent1, message: nextMessage });
 
-    // Agent 2 responds
-    nextMessage = await sendMessage(agent2, nextMessage, "Person 2");
+    nextMessage = await sendMessage(agent2, nextMessage);
     convo.messages.push({ speaker: agent2, message: nextMessage });
   }
 }
@@ -54,10 +50,9 @@ function getConversation(agent1, agent2) {
  *
  * @param {string} agentId
  * @param {string} input
- * @param {string} label             - Label to use in console.log
  * @returns {Promise<string>}        The agent's reply (or the input on fallback).
  */
-async function sendMessage(agentId, input, label) {
+async function sendMessage(agentId, input) {
   const response = await client.agents.messages.create(agentId, {
     messages: [{ role: "user", content: input }]
   });
@@ -67,7 +62,7 @@ async function sendMessage(agentId, input, label) {
   );
 
   if (reply) {
-    console.log(`${label}:`, reply.content);
+    console.log(`${agentId}:`, reply.content);
     return reply.content;
   }
 
@@ -120,5 +115,6 @@ export async function summarizeConversationHistory(agent1, agent2) {
   );
 
   await client.agents.messages.reset(SUMMARIZING_AGENT_ID);
+  await insertSummary(agent1, agent2, summary.content);
   return summary?.content || `No summary generated for ${agent1}.`;
 }
