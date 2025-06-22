@@ -8,7 +8,7 @@
   ],
   "functions": {
     "api/match.js": {
-      "schedule": "*/30 * * * *"
+      "schedule": "*/5 * * * *"
     }
   }
 }
