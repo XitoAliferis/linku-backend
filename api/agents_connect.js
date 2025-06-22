@@ -1,12 +1,12 @@
-import { CONVO_LENGTH, INIT_PROMPT, POST_PROMPT } from '../../Agents/config.js';
-import { setPersona } from '../../Agents/agents.js';
+import { CONVO_LENGTH, INIT_PROMPT, POST_PROMPT } from '../Agents/config.js';
 import {
   clearConversation,
   runConversation,
   summarizeConversationHistory
-} from '../../Agents/conversation.js';
-import { getConnections } from '../../Database/database.js';
-import { makePost } from '../../Agents/posts.js';
+} from '../Agents/conversation.js';
+import { makePost } from '../Agents/posts.js';
+import { setPersona } from '../Agents/agents.js';
+import { getConnections } from '../Database/database.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
