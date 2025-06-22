@@ -10,17 +10,17 @@ export const config = {
   },
 };
 
-const letta = new LettaClient({ baseUrl: process.env.LETTA_BASE_URL });
+const letta = new LettaClient({ baseUrl: process.env.LETTA_PG_URI });
 const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
 async function getAgentIdForUser(userId) {
   const { data, error } = await supabase
     .from('profiles')
     .select('agent_id')
-    .eq('user_id', userId)
+    .eq('id', userId)
     .single();
   if (error) throw error;
   return data.agent_id;
