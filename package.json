@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@letta-ai/letta-client": "^0.1.132",
+    "dotenv": "^16.5.0"
+  }
+}
