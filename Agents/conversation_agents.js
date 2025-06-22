@@ -1,10 +1,6 @@
 import { LettaClient } from '@letta-ai/letta-client'
 
-<<<<<<< HEAD
-const client = new LettaClient({ token: "sk-let-YTg3MTMwZDctODU5Yi00ZWM0LThmMTUtMzlmNTUyZmM4MTdlOjU3NjkyYjRjLTRlN2EtNDZhYy1hNDIzLTk2ZmRmNmUxNWJmNA==" });
-=======
 const client = new LettaClient({ token: "" });
->>>>>>> d2174e4b0fe873e09ce6b4a9031cd3654a518530
 
 
 const person1 = `Jake is a 32-year-old graphic designer who lives in a medium-sized city. He enjoys biking on weekends, reading science fiction novels, and trying out new coffee spots around town. Jake has a dry sense of humor and values meaningful conversations over small talk. He volunteers once a month at a local animal shelter and prefers cozy get-togethers to large parties.`;

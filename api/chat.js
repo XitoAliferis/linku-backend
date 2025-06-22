@@ -1,9 +1,9 @@
-// src/app/api/chat/route.js
+// api/chat.js
 
-import { NextResponse } from 'next/server';
 import { LettaClient } from '@letta-ai/letta-client';
 import { createClient } from '@supabase/supabase-js';
 
+// Use Vercel's process.env for environment variables
 const letta = new LettaClient({ baseUrl: process.env.LETTA_BASE_URL });
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -20,15 +20,30 @@ async function getAgentIdForUser(userId) {
   return data.agent_id;
 }
 
-export async function POST(req) {
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method Not Allowed' });
+    return;
+  }
+
   try {
-    const { userId, message } = await req.json();
+    // For Vercel: parse the JSON body
+    const { userId, message } = req.body || {};
+
+    // Optional: fallback to parsing the raw body if needed (for some deployments)
+    // const body = req.body ? req.body : JSON.parse(await new Promise((resolve) => {
+    //   let data = '';
+    //   req.on('data', chunk => data += chunk);
+    //   req.on('end', () => resolve(data));
+    // }));
+
     const agentId = await getAgentIdForUser(userId);
     if (!agentId) {
-      return NextResponse.json({ error: 'Agent not found' }, { status: 404 });
+      res.status(404).json({ error: 'Agent not found' });
+      return;
     }
 
-    // send user message to Letta
+    // Send user message to Letta
     const response = await letta.agents.messages.create(agentId, {
       messages: [{ role: 'user', content: message }],
     });
@@ -37,12 +52,9 @@ export async function POST(req) {
       response.messages.find((m) => m.messageType === 'assistant_message')
         ?.content ?? '';
 
-    return NextResponse.json({ reply: assistantReply });
+    res.status(200).json({ reply: assistantReply });
   } catch (err) {
     console.error(err);
-    return NextResponse.json(
-      { error: 'Internal server error', detail: err.message },
-      { status: 500 }
-    );
+    res.status(500).json({ error: 'Internal server error', detail: err.message });
   }
 }
