@@ -9,6 +9,10 @@ const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  throw new Error("Missing Supabase credentials in .env");
+}
+
 async function fetchUserData() {
     try {
         const { data, error } = await supabase
@@ -173,5 +177,16 @@ async function matchPipeline() {
     await storeMatchesToSupabase(allMatches);
 }
 
-// Main execution
-matchPipeline();
+//execution
+export default async function handler(req, res) {
+  try {
+    await matchPipeline();
+    res.status(200).json({ message: "Match pipeline executed successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+
+//matchPipeline();
